@@ -1,0 +1,198 @@
+{
+  "name": "API Automation - n8n Assessment",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8093e744-bf51-4ff4-ae0b-2f0f1eea21bf",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://jsonplaceholder.typicode.com/posts",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "715c9268-a9c6-4dba-b30d-5b51acc80bac",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const posts = $input.all();\n\nconst top5Posts = posts\n  .filter(item => item.json.title && item.json.body)\n  .sort((a, b) => b.json.id - a.json.id)\n  .slice(0, 5);\n\nreturn top5Posts;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ],
+      "id": "35f2eb92-b51d-46a1-bb41-2af126d17e4c",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "=https://jsonplaceholder.typicode.com/users/{{$json.userId}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        672,
+        0
+      ],
+      "id": "442aeeb6-88b0-46f5-8e06-179e4e09cd50",
+      "name": "HTTP Request1",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d4e575b7-d051-4f3a-8a84-40c40aeb3d15",
+              "leftValue": "={{$json.id}}",
+              "rightValue": 5,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        896,
+        0
+      ],
+      "id": "90fcc9d9-d7ce-4eeb-8ed4-a49fa54e319f",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "fromEmail": "Vikasverma1080786@gmail.com",
+        "toEmail": "hariomdubey906@gmail.com",
+        "subject": "n8n API Automation Result",
+        "html": "=<h3>n8n API Automation Result</h3>\n\n<p><b>Name:</b> {{$json.name}}</p>\n<p><b>Username:</b> {{$json.username}}</p>\n<p><b>Email:</b> {{$json.email}}</p>\n<p><b>ID:</b> {{$json.id}}</p>",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1120,
+        -96
+      ],
+      "id": "2bd97463-f0a7-434e-a96a-a09d519c0f8f",
+      "name": "Send an Email",
+      "webhookId": "a69415d1-2275-4a5d-a5fb-839d2a6c68f7",
+      "credentials": {
+        "smtp": {
+          "id": "dvsIc2Bf08jsX8x8",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send an Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bc21d9a8-cef9-4259-b391-af9de9fa34e7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "bdae05fa9970381b40ce6428f3959bfb12ca695f96d09d76ba8411c83eb359a4"
+  },
+  "nodeGroups": [],
+  "id": "Qql0I3ipis7xrjdu",
+  "tags": []
+}
